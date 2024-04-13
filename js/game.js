@@ -30,7 +30,7 @@ let alienImg;
 let alienRows = 3;
 let alienCols = 5;
 let alienCount = 0;
-let alienVelX = 1;
+let alienVelX = 10;
 
 let bullets = [];
 let bulletVel = -10;
@@ -38,7 +38,7 @@ let bulletImg;
 
 let score = 0;
 
-window.onload = function () {
+function iniciar() {
   board = document.getElementById('gameCanvas');
   board.width = boardWidth;
   board.height = boardHeight;
@@ -60,13 +60,15 @@ window.onload = function () {
   document.addEventListener('keydown', movePlayer);
   document.addEventListener('keyup', shoot);
   requestAnimationFrame(update);
-};
+}
 
 function update() {
   requestAnimationFrame(update);
   ctx.clearRect(0, 0, boardWidth, boardHeight);
   ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
-
+  ctx.font = '30px VT323';
+  ctx.fillStyle = '#FFF';
+  ctx.fillText('Score:' + score, 10, 20);
   //aliens
   for (let i = 0; i < aliens.length; i++) {
     let alien = aliens[i];
@@ -80,6 +82,11 @@ function update() {
         }
       }
       ctx.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+      if (collition(alien, player)) {
+        ctx.font = '30px VT323';
+        ctx.fillStyle = '#FFF';
+        ctx.fillText('Game over', boardWidth / 2, boardHeight / 2);
+      }
     }
   }
 
