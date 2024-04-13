@@ -39,6 +39,7 @@ let bulletImg;
 let score = 0;
 
 function iniciar() {
+  document.getElementById('btn').hidden = true;
   board = document.getElementById('gameCanvas');
   board.width = boardWidth;
   board.height = boardHeight;
@@ -59,16 +60,16 @@ function iniciar() {
 
   document.addEventListener('keydown', movePlayer);
   document.addEventListener('keyup', shoot);
-  requestAnimationFrame(update);
+  requestAnimationFrame(nivel1);
 }
 
-function update() {
-  requestAnimationFrame(update);
+function nivel1() {
+  requestAnimationFrame(nivel1);
   ctx.clearRect(0, 0, boardWidth, boardHeight);
   ctx.drawImage(playerImg, player.x, player.y, player.width, player.height);
   ctx.font = '30px VT323';
   ctx.fillStyle = '#FFF';
-  ctx.fillText('Score:' + score, 10, 20);
+  ctx.fillText('Score: ' + score, 10, 20);
   //aliens
   for (let i = 0; i < aliens.length; i++) {
     let alien = aliens[i];
@@ -82,10 +83,18 @@ function update() {
         }
       }
       ctx.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
-      if (collition(alien, player)) {
+      if (collition(player, alien)) {
         ctx.font = '30px VT323';
         ctx.fillStyle = '#FFF';
-        ctx.fillText('Game over', boardWidth / 2, boardHeight / 2);
+        ctx.fillText('Game over', boardWidth / 2 - tileSize, boardHeight / 2);
+        ctx.fillText(
+          'Final Score: ' + score,
+          boardWidth / 2 - tileSize * 2,
+          boardHeight / 2 + tileSize
+        );
+        alienVelX = 0;
+        playerVel = 0;
+        bullets.length = 0;
       }
     }
   }

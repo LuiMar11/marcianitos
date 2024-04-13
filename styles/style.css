@@ -7,7 +7,7 @@
 }
 
 body {
-    background-color: #000;
+    background-image: url('/img/background.jpg');
     text-align: center;
 }
 
@@ -16,11 +16,9 @@ h1 {
 }
 
 canvas {
-    border: 1px solid black;
+    border: 15px solid black;
     display: block;
     margin: 0 auto;
-    background-image: url('/img/background.jpg');
-
 }
 
 .btn {
