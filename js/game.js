@@ -30,16 +30,35 @@ let alienImg;
 let alienRows = 3;
 let alienCols = 5;
 let alienCount = 0;
-let alienVelX = 10;
+let alienVelX = 4;
 
+let bossWidth = tileSize * 2;
+let bossHeight = tileSize;
+let bossImg;
+let bossVel = 4;
+let bossX = (tileSize * cols) / 2;
+let bossY = tileSize;
+let bossLife = 100;
+let boss = {
+  x: bossX,
+  y: bossY,
+  width: bossWidth,
+  height: bossHeight,
+};
+var projectiles = [];
 let bullets = [];
 let bulletVel = -10;
 let bulletImg;
 
+let bossBullets = [];
+let bossBulletVel = 10;
+let bossBulletImg;
+
 let score = 0;
+let gameOver = 0;
 
 function iniciar() {
-  document.getElementById('btn').hidden = true;
+  document.getElementById('iniciar').style.display = 'none';
   board = document.getElementById('gameCanvas');
   board.width = boardWidth;
   board.height = boardHeight;
@@ -52,11 +71,17 @@ function iniciar() {
   };
 
   alienImg = new Image();
-  alienImg.src = 'img/enemy1.png';
+  alienImg.src = 'img/invader.png';
   createAliens();
 
   bulletImg = new Image();
   bulletImg.src = 'img/bullet.png';
+
+  bossImg = new Image();
+  bossImg.src = 'img/finalBoss.png';
+
+  bossBulletImg = new Image();
+  bossBulletImg.src = 'img/bulletBoss.png';
 
   document.addEventListener('keydown', movePlayer);
   document.addEventListener('keyup', shoot);
@@ -70,6 +95,7 @@ function nivel1() {
   ctx.font = '30px VT323';
   ctx.fillStyle = '#FFF';
   ctx.fillText('Score: ' + score, 10, 20);
+
   //aliens
   for (let i = 0; i < aliens.length; i++) {
     let alien = aliens[i];
@@ -95,10 +121,10 @@ function nivel1() {
         alienVelX = 0;
         playerVel = 0;
         bullets.length = 0;
+        document.getElementById('reload').style.display = 'inline';
       }
     }
   }
-
   //balas
   for (let i = 0; i < bullets.length; i++) {
     let bullet = bullets[i];
@@ -112,10 +138,50 @@ function nivel1() {
         alienCount--;
         score += 10;
       }
+      if (!bullet.used && bossLife > 0 && collition(bullet, boss)) {
+        bullet.used = true;
+        bossLife -= 10;
+        score += 10;
+      }
     }
     while (bullets.length > 0 && (bullets[0].used || bullets[0].y < 0)) {
       bullets.shift();
     }
+  }
+
+  // boss
+  if (alienCount == 0) {
+    ctx.drawImage(bossImg, boss.x, boss.y, boss.width, boss.height);
+
+    if (bossLife > 0) {
+      for (let i = 0; i < projectiles.length; i++) {
+        let projectile = projectiles[i];
+        ctx.beginPath();
+        ctx.arc(projectile.x, projectile.y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        ctx.closePath();
+      }
+      boss.x += bossVel;
+      if (boss.x + boss.width >= boardWidth || boss.x <= 0) {
+        bossVel *= -1;
+        boss.x += bossVel * 2;
+      }
+    }
+  }
+  if (bossLife === 0) {
+    ctx.font = '30px VT323';
+    ctx.fillStyle = '#FFF';
+    ctx.fillText('Game over', boardWidth / 2 - tileSize, boardHeight / 2);
+    ctx.fillText(
+      'Final Score: ' + score,
+      boardWidth / 2 - tileSize * 2,
+      boardHeight / 2 + tileSize
+    );
+    bossVel = 0;
+    playerVel = 0;
+    bullets.length = 0;
+    document.getElementById('reload').style.display = 'inline';
   }
 }
 
@@ -165,4 +231,8 @@ function collition(a, b) {
     a.y < b.y + b.height &&
     a.y + a.height > b.y
   );
+}
+
+function reload() {
+  document.location.reload();
 }
